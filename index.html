@@ -1,0 +1,708 @@
+<title>臺北青年方案查詢</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&family=Noto+Sans+TC:wght@400;500;700&family=IBM+Plex+Mono:wght@500;600&display=swap">
+<style>
+/* Layout: a counter slip on the left (your conditions), a stack of program tickets on the right, each with an age ruler. */
+:root {
+  --bg: #eef2f5;
+  --surface: #ffffff;
+  --sunken: #f6f8fa;
+  --ink: #15212b;
+  --muted: #5a6a76;
+  --line: #d6dee5;
+  --accent: #2b49d4;
+  --accent-soft: #e6eafc;
+  --marker: #f2b100;
+  --ok: #17804a; --ok-soft: #e3f3ea;
+  --ask: #a96200; --ask-soft: #fbf0dc;
+  --no: #b03a3a; --no-soft: #f8e6e6;
+  --font-display: "Huninn", "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  --font-body: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", system-ui, sans-serif;
+  --font-data: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --radius: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0f151b; --surface: #172029; --sunken: #121a21; --ink: #e5ecf1; --muted: #93a3ae; --line: #2a3742;
+    --accent: #8197ff; --accent-soft: #1f2a52; --marker: #ffc93a;
+    --ok: #55c486; --ok-soft: #173326; --ask: #f0a845; --ask-soft: #3a2a12; --no: #ef8080; --no-soft: #3b1d1f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0f151b; --surface: #172029; --sunken: #121a21; --ink: #e5ecf1; --muted: #93a3ae; --line: #2a3742;
+  --accent: #8197ff; --accent-soft: #1f2a52; --marker: #ffc93a;
+  --ok: #55c486; --ok-soft: #173326; --ask: #f0a845; --ask-soft: #3a2a12; --no: #ef8080; --no-soft: #3b1d1f;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg); color: var(--ink);
+  font-family: var(--font-body); font-size: 15px; line-height: 1.6;
+}
+.wrap {
+  max-width: 1180px; margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 28px 56px;
+}
+header.top { display: grid; gap: 6px; margin-bottom: 24px; }
+.eyebrow { font-size: 12px; letter-spacing: .12em; color: var(--muted); font-weight: 500; }
+h1 { font-family: var(--font-display); font-weight: 400; font-size: clamp(28px, 4vw, 40px); line-height: 1.2; margin: 0; text-wrap: balance; }
+.lede { margin: 0; color: var(--muted); max-width: 62ch; }
+
+.layout { display: grid; grid-template-columns: minmax(280px, 340px) minmax(0, 1fr); gap: 28px; align-items: start; }
+@media (max-width: 860px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+
+/* Slip */
+.slip {
+  background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius);
+  padding: 20px; display: grid; gap: 18px;
+  position: sticky; top: calc(env(safe-area-inset-top, 0px) + 16px);
+  max-height: calc(100vh - 32px); overflow: auto;
+}
+@media (max-width: 860px) { .slip { position: static; max-height: none; } }
+.slip h2 { font-family: var(--font-display); font-weight: 400; font-size: 20px; margin: 0; }
+.slip-head { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+.linkbtn { background: none; border: 0; color: var(--accent); font: inherit; font-size: 13px; cursor: pointer; padding: 4px 0; }
+.linkbtn:hover { text-decoration: underline; }
+.example-note { font-size: 13px; background: var(--accent-soft); color: var(--ink); padding: 8px 10px; border-radius: 8px; }
+fieldset { border: 0; padding: 0; margin: 0; display: grid; gap: 10px; min-width: 0; }
+legend { font-size: 12px; letter-spacing: .1em; color: var(--muted); font-weight: 700; padding: 0; margin-bottom: 8px; }
+.seg { display: grid; grid-template-columns: 1fr 1fr; background: var(--sunken); border: 1px solid var(--line); border-radius: 8px; padding: 3px; gap: 3px; }
+.seg input { position: absolute; opacity: 0; pointer-events: none; }
+.seg label { text-align: center; padding: 7px 6px; border-radius: 6px; cursor: pointer; font-size: 14px; color: var(--muted); }
+.seg input:checked + label { background: var(--surface); color: var(--ink); font-weight: 700; box-shadow: 0 1px 2px rgba(0,0,0,.12); }
+.seg input:focus-visible + label { outline: 2px solid var(--accent); outline-offset: 1px; }
+.field { display: grid; gap: 4px; }
+.field > span { font-size: 13px; color: var(--muted); }
+input[type=number], select {
+  width: 100%; font: inherit; color: var(--ink); background: var(--sunken);
+  border: 1px solid var(--line); border-radius: 8px; padding: 8px 10px;
+}
+input[type=number] { font-family: var(--font-data); }
+input:focus-visible, select:focus-visible, button:focus-visible, summary:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.checks { display: grid; gap: 6px; }
+.check { display: flex; gap: 8px; align-items: flex-start; font-size: 14px; cursor: pointer; }
+.check input { margin-top: 4px; accent-color: var(--accent); flex: none; }
+.hint { font-size: 12px; color: var(--muted); margin: 0; }
+
+/* Results */
+.results { display: grid; gap: 18px; min-width: 0; }
+.toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { font: inherit; font-size: 13px; padding: 5px 12px; border-radius: 999px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); cursor: pointer; }
+.chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+.toggle { display: flex; gap: 8px; align-items: center; font-size: 14px; cursor: pointer; }
+.toggle input { accent-color: var(--accent); }
+
+.summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+@media (max-width: 520px) { .summary { grid-template-columns: minmax(0,1fr); } }
+.stat { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 14px; display: grid; gap: 2px; }
+.stat b { font-family: var(--font-data); font-size: 26px; font-weight: 600; font-variant-numeric: tabular-nums; line-height: 1.1; }
+.stat span { font-size: 13px; color: var(--muted); }
+.stat.yes b { color: var(--ok); }
+.stat.maybe b { color: var(--ask); }
+.stat.now b { color: var(--accent); }
+
+.group { display: grid; gap: 10px; }
+.group-title { display: flex; align-items: baseline; gap: 10px; margin: 6px 0 0; font-family: var(--font-display); font-weight: 400; font-size: 20px; }
+.group-title small { font-family: var(--font-body); font-size: 13px; color: var(--muted); }
+.empty { color: var(--muted); font-size: 14px; background: var(--surface); border: 1px dashed var(--line); border-radius: var(--radius); padding: 14px; margin: 0; }
+
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 16px 18px; display: grid; gap: 12px; border-left: 4px solid var(--line); }
+.card.v-yes { border-left-color: var(--ok); }
+.card.v-maybe { border-left-color: var(--ask); }
+.card-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 12px; align-items: flex-start; }
+.card-title { display: grid; gap: 4px; min-width: 0; }
+.card h3 { margin: 0; font-size: 17px; font-weight: 700; line-height: 1.35; }
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+.tag { font-size: 12px; padding: 1px 8px; border-radius: 4px; background: var(--sunken); color: var(--muted); border: 1px solid var(--line); }
+.pill { font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 999px; white-space: nowrap; }
+.pill.open { background: var(--ok-soft); color: var(--ok); }
+.pill.rolling { background: var(--accent-soft); color: var(--accent); }
+.pill.closed { background: var(--sunken); color: var(--muted); border: 1px solid var(--line); }
+.pill.tba { background: var(--ask-soft); color: var(--ask); }
+.benefit { font-size: 15px; font-weight: 500; }
+.benefit .num { font-family: var(--font-data); font-weight: 600; }
+.summary-text { margin: 0; color: var(--muted); font-size: 14px; max-width: 70ch; }
+
+.ruler { display: grid; gap: 4px; }
+.ruler-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--muted); }
+.ruler-label b { font-family: var(--font-data); color: var(--ink); font-weight: 600; }
+.track { position: relative; height: 10px; background: var(--sunken); border: 1px solid var(--line); border-radius: 999px; }
+.range { position: absolute; top: -1px; bottom: -1px; background: var(--accent-soft); border: 1px solid var(--accent); border-radius: 999px; }
+.marker { position: absolute; top: -5px; width: 4px; height: 18px; margin-left: -2px; background: var(--marker); border-radius: 2px; box-shadow: 0 0 0 2px var(--surface); }
+.ticks { position: relative; height: 14px; font-family: var(--font-data); font-size: 10px; color: var(--muted); }
+.ticks span { position: absolute; transform: translateX(-50%); }
+
+.checklist { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; font-size: 14px; }
+.checklist li { display: grid; grid-template-columns: 20px minmax(0, 1fr); gap: 6px; align-items: start; }
+.mark { width: 18px; height: 18px; border-radius: 50%; display: inline-grid; place-items: center; font-size: 11px; font-weight: 700; margin-top: 2px; }
+.r-ok .mark { background: var(--ok-soft); color: var(--ok); }
+.r-ask .mark { background: var(--ask-soft); color: var(--ask); }
+.r-no .mark { background: var(--no-soft); color: var(--no); }
+.r-info .mark { background: var(--sunken); color: var(--muted); border: 1px solid var(--line); }
+.r-info { color: var(--muted); }
+
+details.more summary { cursor: pointer; font-size: 13px; color: var(--accent); width: max-content; }
+details.more[open] summary { margin-bottom: 8px; }
+.dl { display: grid; grid-template-columns: 76px minmax(0, 1fr); gap: 6px 12px; font-size: 14px; margin: 0; }
+.dl dt { color: var(--muted); }
+.dl dd { margin: 0; }
+.dl a { color: var(--accent); word-break: break-all; }
+
+details.rejected { background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 12px 16px; }
+details.rejected > summary { cursor: pointer; font-family: var(--font-display); font-size: 18px; }
+details.rejected > summary small { font-family: var(--font-body); font-size: 13px; color: var(--muted); margin-left: 8px; }
+.rej-list { list-style: none; padding: 0; margin: 12px 0 0; display: grid; gap: 10px; }
+.rej-list li { display: grid; gap: 2px; font-size: 14px; padding-top: 10px; border-top: 1px solid var(--line); }
+.rej-list li:first-child { border-top: 0; padding-top: 0; }
+.rej-list b { font-weight: 700; }
+.rej-list span { color: var(--no); font-size: 13px; }
+
+footer.note { margin-top: 32px; font-size: 13px; color: var(--muted); display: grid; gap: 4px; max-width: 80ch; }
+footer.note a { color: var(--accent); }
+@media (prefers-reduced-motion: no-preference) {
+  .card { animation: rise .25s ease both; }
+  @keyframes rise { from { transform: translateY(4px); } to { transform: none; } }
+}
+</style>
+
+<div class="wrap">
+  <header class="top">
+    <div class="eyebrow">臺北市政府青年局・資料更新 2026-10-18（民國 115 年）</div>
+    <h1>臺北青年方案查詢</h1>
+    <p class="lede">填入你的年齡、與臺北市的關係和目前身分，立即比對青年局 24 項補助、貸款、實習與參與方案，看哪些你符合、哪些還要確認。</p>
+  </header>
+
+  <div class="layout">
+    <form class="slip" id="form" autocomplete="off">
+      <div class="slip-head">
+        <h2>我的條件</h2>
+        <button type="button" class="linkbtn" id="reset">清除條件</button>
+      </div>
+      <p class="example-note" id="exampleNote">已預填範例條件（24 歲、設籍臺北 1 年以上、大專在學），請改成你的狀況。</p>
+
+      <fieldset>
+        <legend>申請身分</legend>
+        <div class="seg" role="radiogroup">
+          <input type="radio" name="mode" id="mode-person" value="person" checked><label for="mode-person">我個人</label>
+          <input type="radio" name="mode" id="mode-org" value="org"><label for="mode-org">代表單位</label>
+        </div>
+      </fieldset>
+
+      <fieldset id="orgFields" hidden>
+        <legend>單位資料</legend>
+        <label class="field"><span>單位類型</span>
+          <select id="orgType">
+            <option value="company">公司、商號或有限合夥</option>
+            <option value="assoc">人民團體、NPO 或財團法人</option>
+            <option value="school">高中職或大專院校</option>
+            <option value="club">學生社團或學生自治組織</option>
+          </select>
+        </label>
+        <label class="check"><input type="checkbox" id="inTaipei" checked> 設立或立案於臺北市</label>
+      </fieldset>
+
+      <fieldset>
+        <legend id="baseLegend">基本資料</legend>
+        <label class="field"><span id="ageLabel">年齡（足歲）</span>
+          <input type="number" id="age" min="10" max="80" inputmode="numeric" placeholder="例如 24">
+        </label>
+        <label class="field"><span id="natLabel">國籍</span>
+          <select id="nat">
+            <option value="tw">中華民國</option>
+            <option value="foreign">外國籍</option>
+          </select>
+        </label>
+        <label class="field"><span id="tpeLabel">設籍臺北市</span>
+          <select id="tpe">
+            <option value="none">未設籍臺北市</option>
+            <option value="lt6">已設籍，未滿 6 個月</option>
+            <option value="6to12">已設籍 6 個月以上、未滿 1 年</option>
+            <option value="ge12">已設籍 1 年以上</option>
+          </select>
+        </label>
+        <div class="checks" id="tpeExtra">
+          <label class="check"><input type="checkbox" id="study"> 在臺北市就學</label>
+          <label class="check"><input type="checkbox" id="work"> 在臺北市就業</label>
+          <label class="check"><input type="checkbox" id="live"> 居住在臺北市</label>
+        </div>
+      </fieldset>
+
+      <fieldset id="personFields">
+        <legend>目前狀態</legend>
+        <label class="field"><span>學籍</span>
+          <select id="edu">
+            <option value="no">目前非在學</option>
+            <option value="hs">高中職在學</option>
+            <option value="college">大專或研究所在學</option>
+            <option value="grad">115 年應屆畢業</option>
+          </select>
+        </label>
+        <label class="field"><span>創業狀態</span>
+          <select id="startup">
+            <option value="none">沒有創業計畫</option>
+            <option value="planning">有創業想法，尚未登記</option>
+            <option value="registered">已有公司或商業登記</option>
+            <option value="npo">籌組或經營 NPO、社會企業</option>
+          </select>
+        </label>
+      </fieldset>
+
+      <fieldset id="yearsField">
+        <legend>登記或立案年資</legend>
+        <select id="regYears" aria-label="登記或立案年資">
+          <option value="0">未滿 1 年</option>
+          <option value="1">1 年以上、未滿 3 年</option>
+          <option value="3">3 年以上、未滿 5 年</option>
+          <option value="5">5 年以上、未滿 8 年</option>
+          <option value="8">8 年以上</option>
+        </select>
+      </fieldset>
+
+      <fieldset id="flagFields">
+        <legend>其他條件（有就勾選）</legend>
+        <div class="checks">
+          <label class="check" data-person><input type="checkbox" id="f-aiCourse"> 修過 AI 相關課程，或以戰代訓結業</label>
+          <label class="check" data-person><input type="checkbox" id="f-intern"> 在同一公司連續實習 60 日以上</label>
+          <label class="check"><input type="checkbox" id="f-course20"> 3 年內上過政府創業課程 20 小時</label>
+          <label class="check" data-person><input type="checkbox" id="f-abroad"> 計畫出國全時攻讀碩博士或證照</label>
+          <label class="check" data-person><input type="checkbox" id="f-tax"> 本人或扶養人綜所稅率未達 30%</label>
+          <label class="check" data-person><input type="checkbox" id="f-lang"> 有語言檢定（多益 785、雅思 5.5 等）</label>
+          <label class="check" data-person><input type="checkbox" id="f-low"> 臺北市低收或中低收入戶</label>
+        </div>
+        <p class="hint">沒勾的條件會列為「需確認」，不會直接排除。</p>
+      </fieldset>
+    </form>
+
+    <section class="results" aria-live="polite">
+      <div class="toolbar">
+        <div class="chips" id="chips" role="group" aria-label="依類別篩選"></div>
+        <label class="toggle"><input type="checkbox" id="onlyNow"> 只看目前可申請</label>
+      </div>
+      <div class="summary" id="summary"></div>
+      <div class="group" id="g-yes"></div>
+      <div class="group" id="g-maybe"></div>
+      <div id="g-no"></div>
+    </section>
+  </div>
+
+  <footer class="note">
+    <div>比對結果依青年局網站公告整理，僅供參考；實際資格與經費餘額以青年局審核為準。多數補助依收件先後撥款，經費用罄即提前截止。</div>
+    <div>青年局總機 (02)2351-4078・臺北市中正區仁愛路一段 17 號・<a href="https://youth.gov.taipei/" target="_blank" rel="noopener">youth.gov.taipei</a></div>
+  </footer>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var AGE_MIN = 12, AGE_MAX = 50;
+
+  // ---------- rule helpers ----------
+  function ok(t) { return { r: "ok", t: t }; }
+  function no(t) { return { r: "no", t: t }; }
+  function ask(t) { return { r: "ask", t: t }; }
+  function info(t) { return { r: "info", t: t }; }
+  var EDU = { no: "非在學", hs: "高中職在學", college: "大專或研究所在學", grad: "115 年應屆畢業" };
+
+  function person(p) { return p.mode === "person" ? null : no("需由個人申請，不接受單位名義"); }
+  function ageIn(p, a, b) { return p.age != null && p.age >= a && p.age <= b; }
+  function age(p, a, b) {
+    var who = p.mode === "org" ? "代表人年齡" : "年齡";
+    if (p.age == null) return ask(who + "需 " + a + "–" + b + " 歲");
+    return ageIn(p, a, b) ? ok(who + " " + p.age + " 歲，在 " + a + "–" + b + " 歲內") : no(who + "需 " + a + "–" + b + " 歲（目前 " + p.age + " 歲）");
+  }
+  function reg(p, months) {
+    var need = months === 12 ? "設籍臺北市滿 1 年" : "設籍臺北市滿 6 個月";
+    var good = months === 12 ? p.tpe === "ge12" : (p.tpe === "6to12" || p.tpe === "ge12");
+    return good ? ok(need) : no("需" + need);
+  }
+  function tpeAny(p, withLive) {
+    var good = p.tpe !== "none" || p.study || p.work || (withLive && p.live);
+    var txt = withLive ? "臺北市設籍、居住、就學或就業（擇一）" : "臺北市設籍、就學或就業（擇一）";
+    return good ? ok(txt) : no("需" + txt);
+  }
+  function nat(p, need) {
+    if (need === "tw") return p.nat === "tw" ? ok("中華民國國籍") : no("限中華民國國籍");
+    return p.nat === "foreign" ? ok("外國籍") : no("限外國籍人士申請");
+  }
+  function stu(p, levels) {
+    if (levels.indexOf(p.edu) >= 0) return ok("學籍：" + EDU[p.edu]);
+    var want = levels.map(function (l) { return EDU[l]; }).join("或");
+    return no("需" + want);
+  }
+  function flag(p, key, t) { return p.flags[key] ? ok(t) : ask(t); }
+  function isBiz(p) {
+    return (p.mode === "person" && p.startup === "registered") || (p.mode === "org" && p.orgType === "company");
+  }
+  function bizYears(p, max) {
+    if (isBiz(p)) return p.regYears < max ? ok("事業登記未滿 " + max + " 年") : no("事業登記需未滿 " + max + " 年");
+    if (p.mode === "person" && p.startup === "planning") return ask("需先完成公司或商業登記");
+    return no("需為已登記事業（公司、商號）的負責人");
+  }
+  function orgIs(p, types, label) {
+    if (p.mode !== "org") return no("需以" + label + "名義申請");
+    return types.indexOf(p.orgType) >= 0 ? ok("申請單位：" + label) : no("限" + label + "申請");
+  }
+  function inTpe(p) { return p.inTaipei ? ok("單位設於臺北市") : no("單位需設於臺北市"); }
+
+  // ---------- programs ----------
+  var BASE = "https://youth.gov.taipei/services/";
+  var PROGRAMS = [
+    { id: "ai", name: "青年 AI 工具補助計畫", cat: "補助", status: "open", deadline: "至 11/10", age: [18, 35],
+      benefit: "每年最高 <span class=num>4,000</span> 元", benefitLow: "每年最高 <span class=num>8,000</span> 元（低收／中低收）",
+      summary: "補助個人訂閱 AI 工具的費用（2026/8/1–10/31 的訂閱），每年 1 次、最多 2 項工具，限個人版。",
+      apply: "條件達成次日起 1 個月內書面送件，最遲 11/10 送達。附戶籍與在學證明、AI 課程證明、訂閱收據、每項工具 300 字以上心得。",
+      contact: "(02)2351-4078", url: BASE + "05eb79e5-46b5-41e5-b1fd-0519d782b04a/0ecc1836-dd0d-4085-a34f-003609f00796",
+      rules: function (p) { return [person(p), age(p, 18, 35), reg(p, 6), stu(p, ["college", "grad"]), flag(p, "aiCourse", "修過 AI 相關課程或以戰代訓結業")]; } },
+    { id: "intern", name: "青年實習津貼計畫", cat: "補助", status: "open", deadline: "至 11/30", age: [15, 35],
+      benefit: "滿 60 日 <span class=num>1</span> 萬、滿 90 日 <span class=num>1.5</span> 萬元＋交通與健檢", benefitLow: "滿 60 日 <span class=num>2</span> 萬、滿 90 日 <span class=num>3</span> 萬元（低收／中低收）＋交通與健檢",
+      summary: "在學青年連續實習滿 60 或 90 日可領實習津貼，另有交通津貼 2,400／3,600 元與健檢補助最高 1,000 元。",
+      apply: "實習滿日或結束次日起 30 日內，紙本親送或郵寄臺北青年職涯發展中心（仁愛路一段 17 號 2 樓），信封註明「青年實習津貼」。",
+      contact: "02-2395-8567", url: BASE + "05eb79e5-46b5-41e5-b1fd-0519d782b04a/a41148e3-d08f-4f76-8b84-ea4f3ffcb258",
+      rules: function (p) {
+        var s = p.edu === "grad" ? ask("應屆畢業者須於實習首日仍具學籍") : stu(p, ["hs", "college"]);
+        return [person(p), age(p, 15, 35), reg(p, 6), s, flag(p, "intern", "同一公司連續實習滿 60 日")];
+      } },
+    { id: "loan", name: "青年創業融資貸款及利息補貼", cat: "貸款", status: "rolling", age: [18, 45],
+      benefit: "一般貸最高 <span class=num>200</span> 萬元，利息全額補貼",
+      summary: "簡易貸最高 120 萬、一般貸 200 萬元，條件優良者最高 400 萬元；貸款期間利息由青年局全額補貼，信保 95%。",
+      apply: "線上申辦（台北通案件 PO009）並郵寄正本，或臨櫃 2 樓職涯支援科；附事業計畫書、登記證明、財報、創業課程證明。",
+      contact: "02-2395-8567 分機 66", url: BASE + "05eb79e5-46b5-41e5-b1fd-0519d782b04a/a2bb5667-76c8-49c4-b518-b94f10d331df",
+      rules: function (p) { return [age(p, 18, 45), nat(p, "tw"), reg(p, 12), bizYears(p, 5), flag(p, "course20", "3 年內上過政府創業課程 20 小時")]; } },
+    { id: "study", name: "青年留學貸款（希望專案）", cat: "貸款", status: "rolling", age: [20, 45],
+      benefit: "博士 <span class=num>250</span> 萬、碩士 <span class=num>120</span> 萬元，前 10 年利息補貼",
+      summary: "出國全時攻讀碩博士或半年以上專技證照；稅率未達 20% 利息全額補貼、20% 半額補貼。",
+      apply: "攜正本至台北富邦銀行各分行辦理，需 1 位保證人；已出國者可委託親友代辦。",
+      contact: "台北富邦 (02)8751-6665", url: BASE + "05eb79e5-46b5-41e5-b1fd-0519d782b04a/fdd64f80-8a22-4a19-b33c-004ee65db163",
+      rules: function (p) { return [person(p), age(p, 20, 45), nat(p, "tw"), reg(p, 12), flag(p, "abroad", "計畫出國全時攻讀碩博士或證照課程"), flag(p, "tax", "本人或扶養人綜所稅率未達 30%")]; } },
+    { id: "intl", name: "促進青年國際發展補助", cat: "國際", status: "open", deadline: "至 11/30", age: [15, 45],
+      benefit: "每案最高 <span class=num>2</span> 萬元（學校、公益或弱勢 <span class=num>20</span> 萬）",
+      summary: "補助到國外參加或自辦國際展演、競技、大型會議；每年最多 2 案。",
+      apply: "活動前 20 個工作日，掛號郵寄或親送 5 樓國際發展科，附申請書、計畫書與資格證明。",
+      contact: "(02)2351-4078 分機 1220", url: BASE + "05eb79e5-46b5-41e5-b1fd-0519d782b04a/29c7e1b7-a470-4be6-a2e7-ce51eeed1595",
+      rules: function (p) {
+        var r;
+        if (p.mode === "person") r = [age(p, 15, 45), tpeAny(p)];
+        else if (p.orgType === "school") r = [ok("申請單位：學校"), inTpe(p)];
+        else if (p.orgType === "assoc") r = [p.regYears >= 1 ? ok("團體立案滿 1 年") : no("團體需立案滿 1 年"), inTpe(p)];
+        else r = [no("限學校、人民團體或財團法人申請")];
+        return r.concat([info("活動須有 3 個以上國家或地區參與")]);
+      } },
+    { id: "diverse", name: "協助青年多元發展補助", cat: "補助", status: "closed", age: [15, 45], ageNote: "活動對象",
+      benefit: "每場最高 <span class=num>2</span> 萬元",
+      summary: "補助學校、社團與人民團體辦理青年培訓、展演、競技、志工、議題倡導等活動，活動對象須為 15–45 歲。",
+      apply: "115 年上下半年都已因經費用罄提前截止；下一年度請留意公告。",
+      contact: "(02)2351-4078 分機 1120", url: BASE + "05eb79e5-46b5-41e5-b1fd-0519d782b04a/b9acf730-1474-4b86-9d72-41a235d63314",
+      rules: function (p) { return [orgIs(p, ["school", "club", "assoc"], "學校、學生社團或人民團體"), p.mode === "org" ? inTpe(p) : null]; } },
+    { id: "career", name: "職涯培力及創業活動補助", cat: "創業", status: "open", deadline: "第二類至 11/30", age: [18, 45], ageNote: "青創團隊負責人",
+      benefit: "每案最高 <span class=num>2.5</span> 萬元（公益團體 <span class=num>30</span>／<span class=num>10</span> 萬）",
+      summary: "第一類補助在臺北辦職涯或創業活動（1、5、9 月三梯）；第二類補助青創團隊參加 25 攤以上展售活動。",
+      apply: "掛號郵寄或親送 7 樓職涯支援科，信封註明「申請職涯及創業補助」。第二類於活動前 20 日申請。",
+      contact: "(02)2351-4078 分機 1324", url: BASE + "05eb79e5-46b5-41e5-b1fd-0519d782b04a/1c537400-5fba-46d8-9989-1724b00756d3",
+      rules: function (p) {
+        if (p.mode !== "org") return [no("需以學校、團體或登記事業名義申請")];
+        if (p.orgType === "school") return [ok("申請單位：學校"), inTpe(p)];
+        if (p.orgType === "club") return [no("學生社團不在申請對象內")];
+        var a = p.regYears >= 1, young = p.regYears < 3;
+        var r;
+        if (a) r = ok("立案或登記滿 1 年");
+        else if (young && ageIn(p, 18, 45)) r = ok("符合青創團隊（登記未滿 3 年、負責人 18–45 歲）");
+        else if (young && p.age == null) r = ask("登記未滿 1 年者，負責人需 18–45 歲");
+        else r = no("需立案滿 1 年，或為負責人 18–45 歲的青創團隊");
+        return [r, inTpe(p)];
+      } },
+    { id: "cowork", name: "青年創業共享空間租賃補助", cat: "創業", status: "closed", age: [18, 45], ageNote: "代表人",
+      benefit: "租金每月最高 <span class=num>1</span> 萬元、最多 6 個月",
+      summary: "補助剛起步的事業或團體承租臺北市共享空間的租金，每年上限 2.5 萬元。",
+      apply: "115 年度已於 6/16 起停止受理。平時於補助起始月前一個月 1–15 日送件至 2 樓職涯支援科。",
+      contact: "02-2395-8567 分機 66", url: BASE + "05eb79e5-46b5-41e5-b1fd-0519d782b04a/df14e105-c27d-4d0a-9037-27e3128f02b4",
+      rules: function (p) {
+        var r = [orgIs(p, ["company", "assoc"], "登記事業或人民團體")];
+        if (p.mode === "org") r.push(p.regYears < 3 ? ok("登記或立案未滿 3 年") : no("登記或立案需未滿 3 年"), inTpe(p), age(p, 18, 45), nat(p, "tw"));
+        return r.concat([info("承租空間須在「創業台北」或經濟部創育機構名單內")]);
+      } },
+    { id: "innov", name: "青年創新職場實習補助", cat: "職涯", status: "open", deadline: "至 11/10", age: null, ageNote: "實習生不限年齡",
+      benefit: "每名實習生每月 <span class=num>1</span> 萬元、最多 6 個月",
+      summary: "補助提供實習的單位實習指導費，每單位每年最高 15 萬元。實習生須在學，每月 64 小時以上、薪資不低於基本工資。",
+      apply: "先送參與申請表，於臺北市青年職涯發展平台刊登職缺，錄用後 15 日內送聘用資料，再檢附出勤、薪資、保險證明請款。",
+      contact: "(02)2351-4078", url: BASE + "05eb79e5-46b5-41e5-b1fd-0519d782b04a/729724b0-fa5a-44c4-9d72-4c943f85a65d",
+      rules: function (p) {
+        if (p.mode !== "org") return [no("由實習單位申請；學生請找刊登於青年職涯發展平台的職缺")];
+        if (p.orgType === "company") return [p.regYears < 8 ? ok("設立未滿 8 年") : no("公司需設立未滿 8 年"), p.inTaipei ? ok("設於臺北市") : ask("外縣市單位須提供臺北市實習職缺")];
+        if (p.orgType === "assoc") return [ok("NPO／NGO 可申請"), p.inTaipei ? ok("立案或會址在臺北市") : ask("須提供臺北市實習職缺")];
+        return [no("學校與學生社團不在申請對象內")];
+      } },
+    { id: "war", name: "青年以戰代訓銜接職場計畫", cat: "職涯", status: "closed", age: [18, 45],
+      benefit: "免費企業實戰課程，每系列 <span class=num>15</span> 小時以上",
+      summary: "AI、ICT、美妝、數位行銷等企業授課課程；出席 80% 並通過評量可得結業證書，也可作為 AI 工具補助資格。",
+      apply: "115 年第二梯次已截止（7–10 月上課）。每年約 5 月、6 月開放報名，屆時至資策會活動網線上報名。",
+      contact: "資策會 (02)6631-6666", url: BASE + "245a09b0-945c-4a52-b977-247e325f3302/e8bc89d6-ace9-4ac4-b6db-e5c2d6862544",
+      rules: function (p) { return [person(p), age(p, 18, 45), info("不限設籍、學籍與科系")]; } },
+    { id: "counsel", name: "職涯諮詢（臺北青年職涯發展中心）", cat: "職涯", status: "rolling", age: null, ageNote: "頁面未載明年齡",
+      benefit: "一對一約 <span class=num>60</span> 分鐘，免費",
+      summary: "職涯顧問一對一諮詢，可搭配測驗解說、履歷健診、模擬面試。",
+      apply: "至 tpyd.104.com.tw/career 線上預約；仁愛路一段 17 號 2 樓，週二至週日 9:00–18:00。",
+      contact: "02-2395-8567", url: "https://tpyd.104.com.tw/career",
+      rules: function (p) { return [person(p), ok("免費預約，頁面未列資格限制")]; } },
+    { id: "overseas", name: "青年海外實習計畫", cat: "國際", status: "closed", age: [18, 45],
+      benefit: "機票最高 <span class=num>5</span> 萬＋每月 <span class=num>2.5</span> 萬元生活津貼",
+      summary: "媒合到美、新、德、日、澳等地企業實習最多 3 個月，另補助簽證與當地保險。",
+      apply: "2026 年報名 2/25–3/2，已結束。每年約 2 月於計畫官網開放報名，需書審與實體面試。",
+      contact: "計畫辦公室 (03)591-8476", url: "https://taipei-yoip.com/",
+      rules: function (p) { return [person(p), age(p, 18, 45), nat(p, "tw"), tpeAny(p), flag(p, "lang", "113 年後語言檢定達標（如多益 785、雅思 5.5）")]; } },
+    { id: "consult", name: "創業諮詢與一案到底陪跑", cat: "創業", status: "rolling", age: null, ageNote: "頁面未載明年齡",
+      benefit: "顧問諮詢、門診與全程陪跑",
+      summary: "財會、企管、行銷、法律、政府資源等顧問諮詢，從籌備、設立到申請貸款補助全程陪跑。",
+      apply: "電話、email（tpyd.consulting@gmail.com）或臨櫃 2 樓，週一至週六 9:00–18:00；門診填線上表單。",
+      contact: "(02)2395-8567 分機 66", url: BASE + "8ff4f6ac-643d-4e64-9b1b-0dcb85a117d6/e36e5576-9490-4006-b71e-321bc9c02c72",
+      rules: function (p) {
+        if (p.mode === "org") return [p.orgType === "company" || p.orgType === "assoc" ? ok("創業中的事業或團體") : no("適用創業者與新創事業")];
+        return [p.startup === "none" ? ask("適合有創業想法的青年") : ok("有創業計畫或已創業")];
+      } },
+    { id: "social", name: "社會創新諮詢", cat: "創業", status: "rolling", age: null, ageNote: "頁面未載明年齡",
+      benefit: "社創組織顧問門診",
+      summary: "台北 NPO 聚落顧問協助組織設立、財會法務、策略、人資、品牌與捐款人關係。",
+      apply: "填 SurveyCake 線上預約表單，或洽台北 NPO 聚落（重慶南路三段 2 號）。",
+      contact: "台北 NPO 聚落 (02)2301-2160", url: BASE + "8ff4f6ac-643d-4e64-9b1b-0dcb85a117d6/119bca6a-e489-415e-bf6e-b215cf3267c9",
+      rules: function (p) {
+        if (p.mode === "org") return [p.orgType === "assoc" ? ok("NPO 或社創組織") : p.orgType === "company" ? ask("社會企業可諮詢") : no("適用社會創新組織")];
+        if (p.startup === "npo") return [ok("籌組或經營社創組織")];
+        if (p.startup === "planning") return [ask("適用擬成立社創組織者")];
+        return [no("適用 NPO、社會企業的創辦人")];
+      } },
+    { id: "npohub", name: "台北 NPO 聚落進駐", cat: "創業", status: "closed", age: null, ageNote: "以組織申請",
+      benefit: "5–25 坪辦公室、教練陪跑與 ESG 媒合",
+      summary: "供符合 SDGs 的非營利或社創組織進駐，提供辦公與活動空間、教練陪跑、參展輔導。",
+      apply: "115 年進駐入選名單已公布，下一期請留意 NPO 聚落官網。",
+      contact: "(02)2301-2160", url: "https://www.npohub.taipei/",
+      rules: function (p) {
+        if (p.mode === "org") return [p.orgType === "assoc" ? ok("非營利或社創組織") : p.orgType === "company" ? ask("須為符合 SDGs 的社會企業") : no("適用非營利或社創組織")];
+        return [p.startup === "npo" ? ask("需以組織名義申請進駐") : no("適用非營利或社創組織")];
+      } },
+    { id: "market", name: "斜槓自由市（青年市集）", cat: "創業", status: "tba", age: null, ageNote: "攤商資格待公告",
+      benefit: "市集攤位、攤位診療與品牌陪跑",
+      summary: "創業小聚、校園營隊與市集，每場 25 組以上青創品牌，2025 年辦了 7 場。",
+      apply: "2026 年場次與攤商招募尚未公告。",
+      contact: "(02)2351-4078 分機 1300", url: "https://youth.gov.taipei/announcement/news/41114827-c86f-4a8c-b59f-db3cb14ed1ca",
+      rules: function (p) {
+        if (isBiz(p) || (p.mode === "person" && p.startup === "planning")) return [ask("適用青創品牌，攤商資格待公告")];
+        return [no("適用有商品或服務的青創品牌")];
+      } },
+    { id: "xingan", name: "傳統市場青創進駐（幸安市場）", cat: "創業", status: "closed", age: [18, 45],
+      benefit: "攤位前 <span class=num>3</span> 個月免租＋<span class=num>1</span> 年顧問輔導",
+      summary: "把幸安市場閒置攤位交給青創品牌經營，攤位月費約 2,000–3,700 元，顧問每月至少訪視 1 次。",
+      apply: "本期 115/9/21 截止、10/6 開始營運；下一期尚未公告。",
+      contact: "(02)2958-0011 分機 257", url: "https://youth.gov.taipei/announcement/latest-announcement/d8590832-603b-43d7-8789-aa97dbd08a17",
+      rules: function (p) {
+        var t = (p.tpe === "6to12" || p.tpe === "ge12") ? ok("設籍臺北市滿 6 個月") : (p.study || p.work) ? ask("在臺北市就學或就業需滿 1 年") : no("需設籍滿 6 個月，或在臺北市就學、就業滿 1 年");
+        return [age(p, 18, 45), nat(p, "tw"), t, bizYears(p, 8), info("業種限無明火餐飲、選品、文化、美業等")];
+      } },
+    { id: "council", name: "青年事務諮詢委員（第二屆）", cat: "公共參與", status: "open", deadline: "至 11/10", age: [15, 45],
+      benefit: "任期 <span class=num>2</span> 年，參與市政建言",
+      summary: "正取 35–40 人，任期 116–117 年，無給職、可領出席費；未滿 18 歲須附法定代理人同意書。",
+      apply: "115/11/10 23:59 前填線上表單，上傳資格證明、切結書、1,000 字自傳與 1 分鐘自介影片。",
+      contact: "招募小組 0906-470-869", url: "https://youth.gov.taipei/theme/4d9d9841-98c5-4c50-9f0c-578e94312898",
+      rules: function (p) { return [person(p), age(p, 15, 45), tpeAny(p, true)]; } },
+    { id: "contest", name: "公共政策創意提案競賽", cat: "公共參與", status: "closed", age: [15, 45],
+      benefit: "冠軍 <span class=num>10</span> 萬元",
+      summary: "1–6 人組隊提出市政提案，冠軍 10 萬、亞軍 6 萬、季軍 3 萬元，另有特別獎與入圍獎。",
+      apply: "2026 年徵件 8/17–10/16 已截止，決賽 11/8（暫定）。",
+      contact: "02-7746-7535 分機 110", url: BASE + "1fb8dacc-7768-45b9-936e-0e29be8aa732/22ce7986-e25c-4dc3-a3e3-fa3caf6947e7",
+      rules: function (p) { return [person(p), age(p, 15, 45), info("每位團員都要在年齡範圍內")]; } },
+    { id: "volunteer", name: "青年志願服務", cat: "公共參與", status: "closed", age: [15, 45],
+      benefit: "志工訓練、保險與交通誤餐補助",
+      summary: "支援青年局場館、活動與行政，每月至少服勤 6 小時；滿 1 年且 150 小時可申請績效證明。",
+      apply: "2026 年招募至 7/20 已截止；不定期招募，請留意青年局公告。",
+      contact: "(02)2351-4078", url: BASE + "b52a659b-8e57-4832-b96c-cc514b31b14e/8780d113-c3e7-4b32-811e-25a225943fa3",
+      rules: function (p) { return [person(p), age(p, 15, 45), tpeAny(p)]; } },
+    { id: "ovvol", name: "海外志工", cat: "國際", status: "closed", age: [15, 45],
+      benefit: "補助來回機票與海外保險",
+      summary: "赴東南亞國際服務，食宿由合作單位提供，保證金 5,000 元；2026 年共 3 團。",
+      apply: "2026 年報名 2/23–3/1 已結束；每年約 2 月公告。",
+      contact: "華育國際文教協會 03-411-5065", url: BASE + "b52a659b-8e57-4832-b96c-cc514b31b14e/8780d113-c3e7-4b32-811e-25a225943fa3",
+      rules: function (p) { return [person(p), age(p, 15, 45), nat(p, "tw"), tpeAny(p)]; } },
+    { id: "artist", name: "國內外青年藝術家交流（File in Taipei）", cat: "國際", status: "closed", age: [18, 45],
+      benefit: "機票 <span class=num>5</span> 萬、材料 <span class=num>10</span> 萬、生活每月 <span class=num>2.5</span> 萬元",
+      summary: "邀請外國青年藝術家來臺北駐村至少 30 天，每年 8 名。",
+      apply: "2026 年徵件至 5/15 已結束。",
+      contact: "(02)2351-4078", url: BASE + "10319a4a-6e54-4f31-833b-181080cd453f/dd4e131e-d84e-445a-93c6-4a94f1c04108",
+      rules: function (p) { return [person(p), nat(p, "foreign"), age(p, 18, 45), info("需 3 年以上視覺藝術或複合媒材創作經驗")]; } },
+    { id: "chinese", name: "外國人學習中文獎學金", cat: "國際", status: "tba", age: null, ageNote: "不限年齡",
+      benefit: "每月 <span class=num>2.5</span> 萬元、原則 12 個月",
+      summary: "補助臺北市姊妹市、友誼市、夥伴市市民來臺北學中文，每年約 10 名。",
+      apply: "依青年局年度公告申請，需市長推薦函。",
+      contact: "(02)2351-4078", url: BASE + "10319a4a-6e54-4f31-833b-181080cd453f/d655bb56-86f6-4053-86e6-d3aef478b32f",
+      rules: function (p) { return [person(p), nat(p, "foreign"), ask("須為臺北市姊妹市、友誼市或夥伴市市民並獲市長推薦")]; } },
+    { id: "school", name: "青年學堂", cat: "課程", status: "open", deadline: "依場次報名", age: [15, 45],
+      benefit: "免費課程，每場 <span class=num>20–40</span> 人",
+      summary: "溝通力、手作力、運動力三系列；近期場次 11/7、11/12、11/14。",
+      apply: "註冊會員後於 class.tpyd.gov.taipei 線上報名，額滿抽籤或審核。",
+      contact: "(02)2351-4078 分機 1110", url: "https://class.tpyd.gov.taipei/",
+      rules: function (p) { return [person(p), age(p, 15, 45)]; } }
+  ];
+
+  var CATS = ["全部", "補助", "貸款", "職涯", "創業", "國際", "公共參與", "課程"];
+  var STATUS_ORDER = { open: 0, rolling: 1, tba: 2, closed: 3 };
+  var STATUS_TEXT = { rolling: "常態受理", closed: "本年度已截止", tba: "待公告" };
+
+  // ---------- state ----------
+  var EXAMPLE = { mode: "person", age: 24, nat: "tw", tpe: "ge12", study: true, work: false, live: true, edu: "college", startup: "none", regYears: "0", orgType: "company", inTaipei: true, flags: {} };
+  var BLANK = { mode: "person", age: "", nat: "tw", tpe: "none", study: false, work: false, live: false, edu: "no", startup: "none", regYears: "0", orgType: "company", inTaipei: true, flags: {} };
+  var FLAG_KEYS = ["aiCourse", "intern", "course20", "abroad", "tax", "lang", "low"];
+  var cat = "全部";
+  var STORE = "tpyd-finder-v1";
+  var $ = function (id) { return document.getElementById(id); };
+
+  function writeForm(s) {
+    $("mode-person").checked = s.mode !== "org";
+    $("mode-org").checked = s.mode === "org";
+    $("age").value = s.age === null || s.age === undefined ? "" : s.age;
+    ["nat", "tpe", "edu", "startup", "regYears", "orgType"].forEach(function (k) { $(k).value = String(s[k]); });
+    ["study", "work", "live", "inTaipei"].forEach(function (k) { $(k).checked = !!s[k]; });
+    FLAG_KEYS.forEach(function (k) { $("f-" + k).checked = !!(s.flags && s.flags[k]); });
+  }
+  function readForm() {
+    var a = $("age").value.trim();
+    var flags = {};
+    FLAG_KEYS.forEach(function (k) { flags[k] = $("f-" + k).checked; });
+    return {
+      mode: $("mode-org").checked ? "org" : "person",
+      age: a === "" || isNaN(+a) ? null : Math.floor(+a),
+      nat: $("nat").value, tpe: $("tpe").value,
+      study: $("study").checked, work: $("work").checked, live: $("live").checked,
+      edu: $("edu").value, startup: $("startup").value,
+      regYears: +$("regYears").value, orgType: $("orgType").value, inTaipei: $("inTaipei").checked,
+      flags: flags
+    };
+  }
+
+  function evaluate(p) {
+    return PROGRAMS.map(function (prog) {
+      var rules = prog.rules(p).filter(Boolean);
+      var v = "yes";
+      if (rules.some(function (r) { return r.r === "no"; })) v = "no";
+      else if (rules.some(function (r) { return r.r === "ask"; })) v = "maybe";
+      return { prog: prog, rules: rules, v: v };
+    });
+  }
+
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function pct(n) { return ((Math.min(Math.max(n, AGE_MIN), AGE_MAX) - AGE_MIN) / (AGE_MAX - AGE_MIN) * 100).toFixed(2) + "%"; }
+
+  function ruler(prog, p) {
+    if (!prog.age) return '<div class="ruler"><div class="ruler-label"><span>適用年齡</span><b>' + esc(prog.ageNote || "未限") + "</b></div></div>";
+    var a = prog.age[0], b = prog.age[1];
+    var label = (prog.ageNote ? prog.ageNote + " " : "") + a + "–" + b + " 歲";
+    var m = p.age != null ? '<div class="marker" style="left:' + pct(p.age) + '" title="你的年齡 ' + p.age + ' 歲"></div>' : "";
+    var ticks = [15, 20, 25, 30, 35, 40, 45].map(function (t) { return '<span style="left:' + pct(t) + '">' + t + "</span>"; }).join("");
+    return '<div class="ruler"><div class="ruler-label"><span>適用年齡</span><b>' + esc(label) + '</b></div>' +
+      '<div class="track"><div class="range" style="left:' + pct(a) + ";width:calc(" + pct(b) + " - " + pct(a) + ')"></div>' + m + "</div>" +
+      '<div class="ticks" aria-hidden="true">' + ticks + "</div></div>";
+  }
+  function pill(prog) {
+    var t = prog.status === "open" ? "受理中・" + prog.deadline : STATUS_TEXT[prog.status];
+    return '<span class="pill ' + prog.status + '">' + esc(t) + "</span>";
+  }
+  var MARK = { ok: "✓", ask: "?", no: "✕", info: "i" };
+  function card(res, p) {
+    var prog = res.prog;
+    var benefit = p.flags.low && prog.benefitLow ? prog.benefitLow : prog.benefit;
+    var items = res.rules.map(function (r) {
+      return '<li class="r-' + r.r + '"><span class="mark" aria-hidden="true">' + MARK[r.r] + "</span><span>" +
+        (r.r === "ask" ? "需確認：" : "") + esc(r.t) + "</span></li>";
+    }).join("");
+    return '<article class="card v-' + res.v + '">' +
+      '<div class="card-head"><div class="card-title"><h3>' + esc(prog.name) + '</h3><div class="tags"><span class="tag">' + esc(prog.cat) + "</span></div></div>" + pill(prog) + "</div>" +
+      '<div class="benefit">' + benefit + "</div>" +
+      '<p class="summary-text">' + esc(prog.summary) + "</p>" +
+      ruler(prog, p) +
+      '<ul class="checklist">' + items + "</ul>" +
+      '<details class="more"><summary>申請方式與洽詢</summary><dl class="dl">' +
+      "<dt>申請方式</dt><dd>" + esc(prog.apply) + "</dd>" +
+      "<dt>洽詢</dt><dd>" + esc(prog.contact) + "</dd>" +
+      '<dt>官方頁面</dt><dd><a href="' + esc(prog.url) + '" target="_blank" rel="noopener">' + esc(prog.url.replace(/^https:\/\//, "").slice(0, 48)) + "…</a></dd>" +
+      "</dl></details></article>";
+  }
+
+  function sortRes(a, b) { return STATUS_ORDER[a.prog.status] - STATUS_ORDER[b.prog.status]; }
+  function isNow(prog) { return prog.status === "open" || prog.status === "rolling"; }
+
+  function render() {
+    var p = readForm();
+    var isOrg = p.mode === "org";
+    $("orgFields").hidden = !isOrg;
+    $("personFields").hidden = isOrg;
+    $("tpeExtra").hidden = isOrg;
+    $("baseLegend").textContent = isOrg ? "代表人資料" : "基本資料";
+    $("ageLabel").textContent = isOrg ? "代表人年齡（足歲）" : "年齡（足歲）";
+    $("natLabel").textContent = isOrg ? "代表人國籍" : "國籍";
+    $("tpeLabel").textContent = isOrg ? "代表人設籍臺北市" : "設籍臺北市";
+    $("yearsField").hidden = !(isOrg || p.startup === "registered" || p.startup === "npo");
+    Array.prototype.forEach.call(document.querySelectorAll("[data-person]"), function (el) { el.hidden = isOrg; });
+
+    var all = evaluate(p).filter(function (r) { return cat === "全部" || r.prog.cat === cat; });
+    var onlyNow = $("onlyNow").checked;
+    var shown = onlyNow ? all.filter(function (r) { return isNow(r.prog); }) : all;
+    var yes = shown.filter(function (r) { return r.v === "yes"; }).sort(sortRes);
+    var maybe = shown.filter(function (r) { return r.v === "maybe"; }).sort(sortRes);
+    var rej = shown.filter(function (r) { return r.v === "no"; }).sort(sortRes);
+    var nowCount = yes.concat(maybe).filter(function (r) { return isNow(r.prog); }).length;
+
+    $("summary").innerHTML =
+      '<div class="stat yes"><b>' + yes.length + "</b><span>項條件符合</span></div>" +
+      '<div class="stat maybe"><b>' + maybe.length + "</b><span>項可能符合，需確認</span></div>" +
+      '<div class="stat now"><b>' + nowCount + "</b><span>項目前可申請</span></div>";
+
+    $("g-yes").innerHTML = '<h2 class="group-title">條件符合<small>依受理狀態排序</small></h2>' +
+      (yes.length ? yes.map(function (r) { return card(r, p); }).join("") : '<p class="empty">目前沒有完全符合的方案。看看下方「需確認」的項目，或調整條件。</p>');
+    $("g-maybe").innerHTML = maybe.length ? '<h2 class="group-title">可能符合<small>補齊標示「需確認」的條件即可申請</small></h2>' + maybe.map(function (r) { return card(r, p); }).join("") : "";
+    $("g-no").innerHTML = rej.length ? '<details class="rejected"><summary>目前不符合<small>' + rej.length + ' 項，展開看原因</small></summary><ul class="rej-list">' +
+      rej.map(function (r) {
+        var why = r.rules.filter(function (x) { return x.r === "no"; }).map(function (x) { return x.t; }).join("；");
+        return "<li><b>" + esc(r.prog.name) + "</b><span>" + esc(why) + "</span></li>";
+      }).join("") + "</ul></details>" : "";
+
+    try { localStorage.setItem(STORE, JSON.stringify({ s: Object.assign({}, p, { age: p.age === null ? "" : p.age }), cat: cat, onlyNow: onlyNow })); } catch (e) {}
+  }
+
+  function renderChips() {
+    $("chips").innerHTML = CATS.map(function (c) {
+      return '<button type="button" class="chip" aria-pressed="' + (c === cat) + '" data-cat="' + c + '">' + c + "</button>";
+    }).join("");
+  }
+
+  // ---------- boot ----------
+  var saved = null;
+  try { saved = JSON.parse(localStorage.getItem(STORE) || "null"); } catch (e) { saved = null; }
+  if (saved && saved.s) {
+    writeForm(saved.s);
+    cat = CATS.indexOf(saved.cat) >= 0 ? saved.cat : "全部";
+    $("onlyNow").checked = !!saved.onlyNow;
+    $("exampleNote").hidden = true;
+  } else {
+    writeForm(EXAMPLE);
+  }
+  renderChips();
+  render();
+
+  $("form").addEventListener("input", function () { $("exampleNote").hidden = true; render(); });
+  $("form").addEventListener("change", function () { $("exampleNote").hidden = true; render(); });
+  $("form").addEventListener("submit", function (e) { e.preventDefault(); });
+  $("onlyNow").addEventListener("change", render);
+  $("chips").addEventListener("click", function (e) {
+    var b = e.target.closest("[data-cat]");
+    if (!b) return;
+    cat = b.getAttribute("data-cat");
+    renderChips(); render();
+  });
+  $("reset").addEventListener("click", function () {
+    writeForm(BLANK); $("exampleNote").hidden = true; render(); $("age").focus();
+  });
+})();
+</script>
